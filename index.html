@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE por Km - VNT Paraná (AGP)</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VTGH8J2KN8"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VTGH8J2KN8');
+    </script>
+    <style>
+        body {font-family: Arial; background:#222; color:#fff; padding:20px; margin:0;}
+        .c {max-width:480px; margin:30px auto; background:#333; padding:25px; border-radius:12px; box-shadow:0 0 20px rgba(0,150,0,0.3);}
+        h1 {text-align:center; color:#4caf50;}
+        label {display:block; margin:15px 0 5px; font-weight:bold;}
+        select, input, button {width:100%; padding:12px; margin:8px 0; border-radius:6px; border:none; font-size:16px;}
+        select, input {background:#555; color:#fff;}
+        button {background:#008000; color:white; font-weight:bold; cursor:pointer;}
+        button:hover {background:#006600;}
+        .res {background:#000; padding:20px; text-align:center; font-size:1.6em; border-radius:8px; margin:20px 0; color:#4caf50;}
+        .status {text-align:center; font-size:0.9em; color:#aaa; margin-top:10px;}
+        a {color:#4caf50; text-decoration:none;}
+    </style>
+</head>
+<body>
+<div class="c">
+    <h1>PE por Kilometraje</h1>
+    <p style="text-align:center; font-size:0.9em;">Vía Navegable Troncal - Datos AGP 2025</p>
+
+    <label>Estación Inferior (más río arriba)</label>
+    <select id="p1">
+        <option value="1000|2.15">Corrientes (km 1000) → 2.15 m</option>
+        <option value="600|1.85" selected>Santa Fe (km 600) → 1.85 m</option>
+        <option value="300|1.82">Rosario (km 300) → 1.82 m</option>
+        <option value="200|1.75">San Nicolás (km 200) → 1.75 m</option>
+        <option value="100|1.90">Zárate (km 100) → 1.90 m</option>
+    </select>
+
+    <label>Estación Superior (más río abajo)</label>
+    <select id="p2">
+        <option value="100|1.90">Zárate (km 100) → 1.90 m</option>
+        <option value="200|1.75">San Nicolás (km 200) → 1.75 m</option>
+        <option value="300|1.82" selected>Rosario (km 300) → 1.82 m</option>
+        <option value="600|1.85">Santa Fe (km 600) → 1.85 m</option>
+        <option value="1000|2.15">Corrientes (km 1000) → 2.15 m</option>
+    </select>
+
+    <label>Kilometraje buscado (x)</label>
+    <input type="number" id="km" placeholder="Ej: 450" min="0" max="1600">
+
+    <button onclick="calc()">CALCULAR PROFUNDIDAD EFECTIVA</button>
+
+    <div class="res">
+        hx = <span id="hx">—</span> m<br>
+        PE ≈ <span id="pe">—</span> m
+    </div>
+
+    <div class="status">
+        Datos actualizados: 17 nov 2025<br>
+        <a href="https://www.argentina.gob.ar/transporte/administracion-general-puertos-se/via-navegable-troncal/hidrometros" target="_blank">Fuente oficial AGP</a> • 
+        <a href="https://ytodojunto.github.io/CALADO-DE-DESPACHO-V2/" target="_blank">Calculadora de Calado</a>
+    </div>
+</div>
+
+<script>
+function calc() {
+    const v1 = document.getElementById('p1').value.split('|');
+    const v2 = document.getElementById('p2').value.split('|');
+    const x = parseFloat(document.getElementById('km').value);
+
+    if (!x || x<0 || x>1600) return alert("Ingresa un km válido");
+
+    const x1 = parseFloat(v1[0]);
+    const h1 = parseFloat(v1[1]);
+    const x2 = parseFloat(v2[0]);
+    const h2 = parseFloat(v2[1]);
+    const L = Math.abs(x1 - x2);
+
+    const hx = h1 + ((h2 - h1) / L) * (x - x1);
+    const pe = hx + 11.0 - 0.60;  // Batimetría base + factor seguridad
+
+    document.getElementById('hx').textContent = hx.toFixed(2);
+    document.getElementById('pe').textContent = pe.toFixed(2);
+
+    gtag('event', 'calculo_pe_km', {km: x, hx: hx.toFixed(2), pe: pe.toFixed(2)});
+}
+</script>
+</body>
+</html>
